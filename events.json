@@ -5,6 +5,41 @@
   },
   "events": [
     {
+      "dt": "29.08.25 16:36:11",
+      "type": "wiring_issue",
+      "title": "Unzulässige Verkabelung erkannt",
+      "length_m": 14,
+      "loss_kbit": 37603,
+      "message": "An der DSL-Leitung wurde eine Beeinträchtigung des Signals durch eine unzulässige Verkabelung erkannt. Bitte prüfen Sie Ihre Leitung auf eventuell vorhandene Abzweigungen oder Mehrfachverteilungen. Die Abzweigung ist 14 Meter lang. Sie kostet ungefähr 37603 kbit/s."
+    },
+    {
+      "dt": "29.08.25 16:36:10",
+      "type": "ok",
+      "title": "Internetverbindung wurde erfolgreich hergestellt"
+    },
+    {
+      "dt": "29.08.25 16:35:06",
+      "type": "ok",
+      "title": "DSL ist verfügbar",
+      "details": "89003/18976 kbit/s"
+    },
+    {
+      "dt": "29.08.25 16:33:32",
+      "type": "sync",
+      "title": "DSL-Synchronisierung beginnt (Training)"
+    },
+    {
+      "dt": "29.08.25 16:33:18",
+      "type": "error",
+      "title": "Internetverbindung wurde getrennt"
+    },
+    {
+      "dt": "29.08.25 16:33:18",
+      "type": "error",
+      "title": "DSL antwortet nicht",
+      "details": "Keine DSL-Synchronisierung"
+    },
+    {
       "dt": "29.08.25 11:12:01",
       "type": "info",
       "title": "NEUVERBINDUNG FAZIT",
