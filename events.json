@@ -5,7 +5,7 @@
   },
   "events": [
     {
-      "dt": "",
+      "dt": "29.08.25 11:12:01",
       "type": "info",
       "title": "NEUVERBINDUNG FAZIT",
       "manual": true,
@@ -41,22 +41,15 @@
       "title": "Internetverbindung wurde getrennt"
     },
     {
-      "dt": "",
-      "type": "info",
-      "title": "DSL KABEL (TAE DOSE) NEU VERBUNDEN",
-      "manual": true,
-      "details": "Um zu testen ob bei Neuverbindung die empfangene Bandbreite anders ist"
-    },
-    {
       "dt": "29.08.25 11:05:15",
       "type": "error",
       "title": "DSL antwortet nicht",
       "details": "Keine DSL-Synchronisierung"
     },
     {
-      "dt": "",
+      "dt": "29.08.25 11:05:14",
       "type": "info",
-      "title": "DSL KABEL (ROUTER) NEU VERBUNDEN",
+      "title": "DSL KABEL (TAE DOSE) NEU VERBUNDEN",
       "manual": true,
       "details": "Um zu testen ob bei Neuverbindung die empfangene Bandbreite anders ist"
     },
@@ -93,13 +86,6 @@
       "title": "DSL-Synchronisierung beginnt (Training)"
     },
     {
-      "dt": "",
-      "type": "info",
-      "title": "DSL VERBUNDEN",
-      "manual": true,
-      "details": "Neues DSL Kabel verbunden"
-    },
-    {
       "dt": "29.08.25 10:56:47",
       "type": "error",
       "title": "Internetverbindung wurde getrennt"
@@ -109,6 +95,13 @@
       "type": "error",
       "title": "DSL antwortet nicht",
       "details": "Keine DSL-Synchronisierung"
+    },
+    {
+      "dt": "29.08.25 10:56:45",
+      "type": "info",
+      "title": "DSL KABEL (ROUTER) NEU VERBUNDEN",
+      "manual": true,
+      "details": "Um zu testen ob bei Neuverbindung die empfangene Bandbreite anders ist"
     },
     {
       "dt": "29.08.25 10:36:00",
@@ -184,6 +177,13 @@
       "dt": "28.08.25 19:48:31",
       "type": "sync",
       "title": "DSL-Synchronisierung beginnt (Training)"
+    },
+    {
+      "dt": "28.08.25 19:00:00",
+      "type": "info",
+      "title": "DSL VERBUNDEN",
+      "manual": true,
+      "details": "Neues DSL Kabel verbunden"
     }
   ],
   "milestones": []
