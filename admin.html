@@ -7,11 +7,11 @@
 <style>
   :root{
     --bg:#0b0d10;--panel:#12161b;--text:#e6edf3;--muted:#9aa5b1;--border:#1f2833;
-    --accent:#7c6ff6;--accent-ghost:#3e38a8;--bad:#ff5c5c;--drag:#2bb1ff
+    --accent:#7c6ff6;--accent-ghost:#3e38a8;--bad:#ff5c5c
   }
   @media (prefers-color-scheme: light){
     :root{--bg:#fafbfc;--panel:#ffffff;--text:#1f2328;--muted:#5f6b78;--border:#e6e8eb;
-          --accent:#685cf6;--accent-ghost:#564ee0;--bad:#e5534b;--drag:#2b9dff}
+          --accent:#685cf6;--accent-ghost:#564ee0;--bad:#e5534b}
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Noto Sans,sans-serif}
@@ -50,10 +50,6 @@
   tr:first-child td,tr:first-child th{border-top:none}
   code{font-family:ui-monospace,monospace}
   .pill{font-size:13px;border:1px solid var(--border);padding:4px 10px;border-radius:999px;color:var(--muted)}
-  /* Drag & Drop */
-  tr.draggable{cursor:grab}
-  tr.draggable:active{cursor:grabbing}
-  tr.drop-target{outline:2px solid var(--drag);outline-offset:-2px}
 </style>
 </head>
 <body>
@@ -86,10 +82,14 @@
       <button id="btnParseSpeed" class="btn btn-primary" style="margin-top:12px">Speedtests parsen & hinzufügen</button>
     </section>
 
-    <!-- Individuelle Events (ohne Timestamp, verschiebbar) -->
+    <!-- Individuelle Events (mit Custom-Timestamp) -->
     <section class="panel">
       <h2>Individuelles Event</h2>
       <div class="row">
+        <div>
+          <label for="evTs">Timestamp</label>
+          <input id="evTs" class="big" placeholder="28.08.25 19:44:00">
+        </div>
         <div>
           <label for="evType">Typ</label>
           <select id="evType" class="big">
@@ -101,13 +101,11 @@
             <option value="speedtest">speedtest</option>
           </select>
         </div>
-        <div>
-          <label for="evTitle">Titel / Beschreibung</label>
-          <input id="evTitle" class="big">
-        </div>
       </div>
+      <label for="evTitle">Titel / Beschreibung</label>
+      <input id="evTitle" class="big" placeholder="FRITZ!Box neu gestartet">
       <label for="evDetails">Details (optional)</label>
-      <input id="evDetails" class="big">
+      <input id="evDetails" class="big" placeholder="">
       <button id="btnAddEvent" class="btn btn-primary" style="margin-top:12px">Individuelles Event hinzufügen</button>
     </section>
 
@@ -136,9 +134,7 @@
   let data = { meta:{ title:"DSL-/FRITZ!Box Ereignisse", timezone:"Europe/Berlin" }, events:[], milestones:[] };
 
   // -------- Helpers --------
-  function normalizeText(s){
-    return String(s).replace(/\u00A0/g, ' ').replace(/\s+/g, ' ').trim();
-  }
+  function normalizeText(s){ return String(s).replace(/\u00A0/g, ' ').replace(/\s+/g, ' ').trim(); }
   function parseNumberDE(s){ return parseFloat(String(s).replace(/\./g,'').replace(',', '.')); }
 
   // DMY "DD.MM.YY HH:MM:SS" + ISO fallback
@@ -154,16 +150,15 @@
     return Number.isNaN(t) ? null : new Date(t);
   }
 
-  // Datierte Events (neu→alt) sortieren; manuelle bleiben an ihrer Position und sind DnD-verschiebbar
-  function sortEventsKeepManualPositions(){
-    const manualSlots = new Set();
-    const manual = [];
-    const timed = [];
-    data.events.forEach((e,i)=>{ if(e.manual || !e.dt){ manualSlots.add(i); manual.push(e);} else timed.push(e); });
-    timed.sort((a,b)=> (parseToDate(b.dt) - parseToDate(a.dt)));
-    const rebuilt = []; let t=0, m=0;
-    for(let i=0;i<data.events.length;i++){ rebuilt.push( manualSlots.has(i) ? manual[m++] : timed[t++] ); }
-    data.events = rebuilt;
+  // Globale Sortierung: alles nach Timestamp (neu → alt). Einträge ohne dt nach unten.
+  function sortAllByTimestamp(){
+    data.events.sort((a,b)=>{
+      const da = parseToDate(a.dt); const db = parseToDate(b.dt);
+      if(da && db) return db - da;
+      if(da && !db) return -1;
+      if(!da && db) return 1;
+      return 0;
+    });
   }
 
   // -------- Parsers --------
@@ -174,7 +169,6 @@
     wiring: /unzulässige\s+verkabelung\s+erkannt.*?abzweigung\s+ist\s+(\d+)\s*meter.*?kostet\s+ungefähr\s+(\d+)\s*kbit\/s/i
   };
 
-  // Mapping nach deinen Regeln
   function parseLogLine(rawLine){
     const m = rawLine.match(RX.line);
     if(!m) return null;
@@ -183,47 +177,35 @@
     const raw = normalizeText(msgRaw);
     const msg = raw.toLowerCase();
 
-    // Speedtest
     if (RX.speedtestLog.test(raw)) {
       const sm = raw.match(RX.speedtestLog);
       return { dt, type:'speedtest', title:'Vodafone Speedtest', id: sm[1], down: parseNumberDE(sm[2]), up: parseNumberDE(sm[3]) };
     }
-    // Verkabelung
     const w = raw.match(RX.wiring);
     if (w) return { dt, type:'wiring_issue', title:'Unzulässige Verkabelung erkannt', length_m:+w[1], loss_kbit:+w[2], message: raw };
 
-    // Training -> sync
     if (msg.includes('synchronisierung beginnt') && msg.includes('(training')) {
       return { dt, type:'sync', title:'DSL-Synchronisierung beginnt (Training)' };
     }
-    // DSL ist verfügbar -> ok (+ optional Raten)
     if (msg.startsWith('dsl ist verfügbar')) {
       const r = raw.match(RX.rates);
       return r
         ? { dt, type:'ok', title:'DSL ist verfügbar', details:`${normalizeText(r[1]).replace(/\s+/g,'')}/${r[2]} kbit/s` }
         : { dt, type:'ok', title:'DSL ist verfügbar' };
     }
-    // Internetverbindung wurde erfolgreich hergestellt -> ok
     if (msg.startsWith('internetverbindung wurde erfolgreich hergestellt')) {
       return { dt, type:'ok', title:'Internetverbindung wurde erfolgreich hergestellt' };
     }
-    // DSL antwortet nicht -> error
     if (msg.startsWith('dsl antwortet nicht')) {
       return { dt, type:'error', title:'DSL antwortet nicht', details: (msg.includes('keine dsl-synchronisierung') ? 'Keine DSL-Synchronisierung' : undefined) };
     }
-    // Internetverbindung wurde getrennt -> error
     if (msg.startsWith('internetverbindung wurde getrennt')) {
       return { dt, type:'error', title:'Internetverbindung wurde getrennt' };
     }
-
-    // Fallback
     return { dt, type:'info', title: rawLine.trim() };
   }
 
-  // Speedtest-Block:
-  // 1: "DD.MM.YY - HH:MM[:SS]ID"
-  // 2: "--" (optional)
-  // 3: Down, 4: Up
+  // Speedtest-Block-Parser
   function parseSpeedBlocks(text){
     const blocks = text.split(/\n\s*\n/).map(b=>b.trim()).filter(Boolean);
     const out = [];
@@ -250,44 +232,9 @@
     return out;
   }
 
-  // -------- Drag & Drop (nur manuelle Events) --------
-  let dragIndex = null;
-  function attachDnDHandlers(){
-    const rows = document.querySelectorAll('#tbl tbody tr');
-    rows.forEach(row=>{
-      const idx = +row.dataset.index;
-      const ev = data.events[idx];
-      if(ev && ev.manual === true){
-        row.setAttribute('draggable','true');
-        row.classList.add('draggable');
-        row.addEventListener('dragstart', e=>{ dragIndex = idx; e.dataTransfer.effectAllowed = 'move'; });
-        row.addEventListener('dragend', ()=>{ dragIndex = null; rows.forEach(r=>r.classList.remove('drop-target')); });
-      }else{
-        row.removeAttribute('draggable'); row.classList.remove('draggable');
-      }
-      row.addEventListener('dragover', e=>{
-        if(dragIndex===null) return;
-        e.preventDefault(); row.classList.add('drop-target'); e.dataTransfer.dropEffect = 'move';
-      });
-      row.addEventListener('dragleave', ()=> row.classList.remove('drop-target'));
-      row.addEventListener('drop', e=>{
-        e.preventDefault(); row.classList.remove('drop-target');
-        if(dragIndex===null) return;
-        const targetIndex = +row.dataset.index;
-        if(targetIndex === dragIndex) return;
-        const moving = data.events[dragIndex];
-        if(!moving || moving.manual !== true) return;
-        data.events.splice(dragIndex,1);
-        data.events.splice(targetIndex,0,moving);
-        refreshTable();
-      });
-    });
-  }
-
   // -------- Render --------
   function refreshTable(){
-    sortEventsKeepManualPositions();
-
+    sortAllByTimestamp();
     const tbody = document.querySelector('#tbl tbody');
     const rows = data.events.map((e,i)=>{
       const det = (e.type==='speedtest')
@@ -296,20 +243,19 @@
             ? `${e.message || ''} ${e.length_m?('· Abzweigung: '+e.length_m+' m'):''} ${e.loss_kbit?('· Verlust: '+e.loss_kbit+' kbit/s'):''}`.trim()
             : ''));
       const dtShown = e.dt && e.dt.length ? e.dt : '—';
-      const manualBadge = e.manual ? ' <span class="pill">manuell</span>' : '';
       return `<tr data-index="${i}">
         <td><code>${dtShown}</code></td>
-        <td><span class="pill">${e.type}</span>${manualBadge}</td>
+        <td><span class="pill">${e.type}</span></td>
         <td>${e.title}${det?(' – <span style="color:var(--muted)">'+det+'</span>'):''}</td>
       </tr>`;
     }).join('') || `<tr><td colspan="3" style="color:var(--muted)">Noch keine Einträge.</td></tr>`;
 
     tbody.innerHTML = rows;
     document.getElementById('count').textContent = data.events.length;
-    attachDnDHandlers();
   }
 
   // -------- Actions --------
+  // Logs
   document.getElementById('btnParse').addEventListener('click', ()=>{
     const lines = document.getElementById('taLogs').value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
     const parsed = lines.map(parseLogLine).filter(Boolean);
@@ -317,6 +263,7 @@
     refreshTable();
   });
 
+  // Speedtest-Blöcke
   document.getElementById('btnParseSpeed').addEventListener('click', ()=>{
     const raw = document.getElementById('taSpeed').value.trim();
     if(!raw){ alert('Bitte Speedtest-Blöcke einfügen.'); return; }
@@ -326,15 +273,20 @@
     refreshTable();
   });
 
-  // Manuelles Event (ohne dt) – oben einfügen, verschiebbar
+  // Manuelles Event MIT Timestamp – wird einsortiert
   document.getElementById('btnAddEvent').addEventListener('click', ()=>{
+    const ts = document.getElementById('evTs').value.trim();
     const type = document.getElementById('evType').value;
     const title = document.getElementById('evTitle').value.trim();
     const details = document.getElementById('evDetails').value.trim();
+
+    const m = ts.match(/^(\d{2}\.\d{2}\.\d{2})\s+(\d{2}:\d{2}:\d{2})$/);
+    if(!m){ alert('Timestamp bitte als DD.MM.YY HH:MM:SS eingeben.'); return; }
     if(!title){ alert('Bitte Titel/Beschreibung eingeben.'); return; }
-    const obj = { dt:"", type, title, manual:true };
+
+    const obj = { dt:`${m[1]} ${m[2]}`, type, title };
     if(details) obj.details = details;
-    data.events.unshift(obj);
+    data.events.push(obj);
     refreshTable();
   });
 
@@ -363,17 +315,19 @@
     if(!j.milestones) j.milestones = [];
     data.events.push(...j.events);
     data.milestones.push(...(j.milestones||[]));
-    refreshTable();
+    refreshTable(); // sortiert ebenfalls
   }
 
   // Download / Copy / Clear
   document.getElementById('btnDownload').addEventListener('click', ()=>{
+    sortAllByTimestamp();
     const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
     const url = URL.createObjectURL(blob);
     const a = Object.assign(document.createElement('a'), {href:url, download:'events.json'});
     document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
   });
   document.getElementById('btnCopy').addEventListener('click', ()=>{
+    sortAllByTimestamp();
     navigator.clipboard.writeText(JSON.stringify(data,null,2));
     alert('JSON in die Zwischenablage kopiert.');
   });

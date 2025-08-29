@@ -5,6 +5,14 @@
   },
   "events": [
     {
+      "dt": "29.08.25 17:54:00",
+      "type": "speedtest",
+      "title": "Vodafone Speedtest",
+      "id": "yyzpd7",
+      "down": 81,
+      "up": 17.5
+    },
+    {
       "dt": "29.08.25 16:36:11",
       "type": "wiring_issue",
       "title": "Unzulässige Verkabelung erkannt",
