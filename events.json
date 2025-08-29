@@ -5,6 +5,62 @@
   },
   "events": [
     {
+      "dt": "",
+      "type": "info",
+      "title": "NEUVERBINDUNG FAZIT",
+      "manual": true,
+      "details": "Eine neue Verbindung des DSL Kabels direkt and der TAE Dose führt zur Besserung der Bandbreite (auch keine unzuverlässige Verbindung mehr)"
+    },
+    {
+      "dt": "29.08.25 11:12:00",
+      "type": "speedtest",
+      "title": "Vodafone Speedtest",
+      "id": "rsffsf",
+      "down": 162,
+      "up": 28
+    },
+    {
+      "dt": "29.08.25 11:09:05",
+      "type": "ok",
+      "title": "Internetverbindung wurde erfolgreich hergestellt"
+    },
+    {
+      "dt": "29.08.25 11:07:58",
+      "type": "ok",
+      "title": "DSL ist verfügbar",
+      "details": "174989/31999 kbit/s"
+    },
+    {
+      "dt": "29.08.25 11:06:24",
+      "type": "sync",
+      "title": "DSL-Synchronisierung beginnt (Training)"
+    },
+    {
+      "dt": "29.08.25 11:05:16",
+      "type": "error",
+      "title": "Internetverbindung wurde getrennt"
+    },
+    {
+      "dt": "",
+      "type": "info",
+      "title": "DSL KABEL (TAE DOSE) NEU VERBUNDEN",
+      "manual": true,
+      "details": "Um zu testen ob bei Neuverbindung die empfangene Bandbreite anders ist"
+    },
+    {
+      "dt": "29.08.25 11:05:15",
+      "type": "error",
+      "title": "DSL antwortet nicht",
+      "details": "Keine DSL-Synchronisierung"
+    },
+    {
+      "dt": "",
+      "type": "info",
+      "title": "DSL KABEL (ROUTER) NEU VERBUNDEN",
+      "manual": true,
+      "details": "Um zu testen ob bei Neuverbindung die empfangene Bandbreite anders ist"
+    },
+    {
       "dt": "29.08.25 11:01:00",
       "type": "speedtest",
       "title": "Vodafone Speedtest",
@@ -37,16 +93,16 @@
       "title": "DSL-Synchronisierung beginnt (Training)"
     },
     {
+      "dt": "",
+      "type": "info",
+      "title": "DSL VERBUNDEN",
+      "manual": true,
+      "details": "Neues DSL Kabel verbunden"
+    },
+    {
       "dt": "29.08.25 10:56:47",
       "type": "error",
       "title": "Internetverbindung wurde getrennt"
-    },
-    {
-      "dt": "",
-      "type": "info",
-      "title": "DSL KABEL (ROUTER) NEU VERBUNDEN",
-      "manual": true,
-      "details": "Um zu testen ob bei Neuverbindung die empfangene Bandbreite anders ist"
     },
     {
       "dt": "29.08.25 10:56:46",
@@ -80,13 +136,6 @@
       "type": "ok",
       "title": "DSL ist verfügbar",
       "details": "90185/19429 kbit/s"
-    },
-    {
-      "dt": "",
-      "type": "info",
-      "title": "DSL VERBUNDEN",
-      "manual": true,
-      "details": "Neues DSL Kabel verbunden"
     },
     {
       "dt": "29.08.25 03:35:08",
