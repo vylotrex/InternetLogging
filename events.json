@@ -5,11 +5,54 @@
   },
   "events": [
     {
+      "dt": "29.08.25 11:01:00",
+      "type": "speedtest",
+      "title": "Vodafone Speedtest",
+      "id": "fqktzs",
+      "down": 90,
+      "up": 17.9
+    },
+    {
+      "dt": "29.08.25 10:59:39",
+      "type": "wiring_issue",
+      "title": "Unzulässige Verkabelung erkannt",
+      "length_m": 14,
+      "loss_kbit": 37052,
+      "message": "An der DSL-Leitung wurde eine Beeinträchtigung des Signals durch eine unzulässige Verkabelung erkannt. Bitte prüfen Sie Ihre Leitung auf eventuell vorhandene Abzweigungen oder Mehrfachverteilungen. Die Abzweigung ist 14 Meter lang. Sie kostet ungefähr 37052 kbit/s."
+    },
+    {
+      "dt": "29.08.25 10:59:38",
+      "type": "ok",
+      "title": "Internetverbindung wurde erfolgreich hergestellt"
+    },
+    {
+      "dt": "29.08.25 10:58:34",
+      "type": "ok",
+      "title": "DSL ist verfügbar",
+      "details": "93056/19710 kbit/s"
+    },
+    {
+      "dt": "29.08.25 10:57:00",
+      "type": "sync",
+      "title": "DSL-Synchronisierung beginnt (Training)"
+    },
+    {
+      "dt": "29.08.25 10:56:47",
+      "type": "error",
+      "title": "Internetverbindung wurde getrennt"
+    },
+    {
       "dt": "",
       "type": "info",
       "title": "DSL KABEL (ROUTER) NEU VERBUNDEN",
       "manual": true,
       "details": "Um zu testen ob bei Neuverbindung die empfangene Bandbreite anders ist"
+    },
+    {
+      "dt": "29.08.25 10:56:46",
+      "type": "error",
+      "title": "DSL antwortet nicht",
+      "details": "Keine DSL-Synchronisierung"
     },
     {
       "dt": "29.08.25 10:36:00",
@@ -37,6 +80,13 @@
       "type": "ok",
       "title": "DSL ist verfügbar",
       "details": "90185/19429 kbit/s"
+    },
+    {
+      "dt": "",
+      "type": "info",
+      "title": "DSL VERBUNDEN",
+      "manual": true,
+      "details": "Neues DSL Kabel verbunden"
     },
     {
       "dt": "29.08.25 03:35:08",
@@ -80,13 +130,6 @@
       "type": "ok",
       "title": "DSL ist verfügbar",
       "details": "96763/20054 kbit/s"
-    },
-    {
-      "dt": "",
-      "type": "info",
-      "title": "DSL VERBUNDEN",
-      "manual": true,
-      "details": "Neues DSL Kabel verbunden"
     },
     {
       "dt": "28.08.25 19:48:31",
