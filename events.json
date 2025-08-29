@@ -5,6 +5,55 @@
   },
   "events": [
     {
+      "dt": "",
+      "type": "info",
+      "title": "DSL KABEL NEU VERBUNDEN",
+      "manual": true
+    },
+    {
+      "dt": "29.08.25 10:36:00",
+      "type": "speedtest",
+      "title": "Vodafone Speedtest",
+      "id": "2gsdbh",
+      "down": 86,
+      "up": 17.8
+    },
+    {
+      "dt": "29.08.25 03:37:47",
+      "type": "wiring_issue",
+      "title": "Unzulässige Verkabelung erkannt",
+      "length_m": 14,
+      "loss_kbit": 37896,
+      "message": "An der DSL-Leitung wurde eine Beeinträchtigung des Signals durch eine unzulässige Verkabelung erkannt. Bitte prüfen Sie Ihre Leitung auf eventuell vorhandene Abzweigungen oder Mehrfachverteilungen. Die Abzweigung ist 14 Meter lang. Sie kostet ungefähr 37896 kbit/s."
+    },
+    {
+      "dt": "29.08.25 03:37:47",
+      "type": "ok",
+      "title": "Internetverbindung wurde erfolgreich hergestellt"
+    },
+    {
+      "dt": "29.08.25 03:36:43",
+      "type": "ok",
+      "title": "DSL ist verfügbar",
+      "details": "90185/19429 kbit/s"
+    },
+    {
+      "dt": "29.08.25 03:35:08",
+      "type": "sync",
+      "title": "DSL-Synchronisierung beginnt (Training)"
+    },
+    {
+      "dt": "29.08.25 03:34:53",
+      "type": "error",
+      "title": "Internetverbindung wurde getrennt"
+    },
+    {
+      "dt": "29.08.25 03:34:52",
+      "type": "error",
+      "title": "DSL antwortet nicht",
+      "details": "Keine DSL-Synchronisierung"
+    },
+    {
       "dt": "29.08.25 02:34:00",
       "type": "speedtest",
       "title": "Vodafone Speedtest",
@@ -32,16 +81,16 @@
       "details": "96763/20054 kbit/s"
     },
     {
-      "dt": "28.08.25 19:48:31",
-      "type": "sync",
-      "title": "DSL-Synchronisierung beginnt (Training)"
-    },
-    {
       "dt": "",
       "type": "info",
       "title": "DSL VERBUNDEN",
       "manual": true,
       "details": "Neues DSL Kabel verbunden"
+    },
+    {
+      "dt": "28.08.25 19:48:31",
+      "type": "sync",
+      "title": "DSL-Synchronisierung beginnt (Training)"
     }
   ],
   "milestones": []
