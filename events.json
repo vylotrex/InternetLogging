@@ -5,7 +5,7 @@
   },
   "events": [
     {
-      "dt": "",
+      "dt": "Um zu testen ob bei Neuverbindung die empfangene Bandbreite anders ist",
       "type": "info",
       "title": "DSL KABEL NEU VERBUNDEN",
       "manual": true
