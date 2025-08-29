@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DSL-/FRITZ!Box – Admin (Parser & Editor)</title>
+<style>
+  :root{
+    --bg:#0b0d10;--panel:#12161b;--text:#e6edf3;--muted:#9aa5b1;--border:#1f2833;
+    --accent:#7c6ff6;--accent-ghost:#3e38a8;--bad:#ff5c5c;--drag:#2bb1ff
+  }
+  @media (prefers-color-scheme: light){
+    :root{--bg:#fafbfc;--panel:#ffffff;--text:#1f2328;--muted:#5f6b78;--border:#e6e8eb;
+          --accent:#685cf6;--accent-ghost:#564ee0;--bad:#e5534b;--drag:#2b9dff}
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Noto Sans,sans-serif}
+  .wrap{max-width:1160px;margin:auto;padding:34px 18px}
+  h1{margin:0 0 10px;font-size:clamp(26px,3.8vw,40px)}
+  /* Toolbar & Buttons */
+  .toolbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:14px 0 18px}
+  .btn{
+    appearance:none;background:transparent;color:var(--text);border:1px solid var(--border);
+    padding:14px 18px;border-radius:12px;cursor:pointer;font-size:16px;line-height:1
+  }
+  .btn:hover{filter:brightness(1.05)}
+  .btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn-ghost{background:transparent;border-color:var(--accent-ghost);color:#fff}
+  .btn-danger{border-color:var(--bad);color:#fff;background:transparent}
+  .btn-group{display:flex;gap:0}
+  .btn-group .btn{border-radius:0}
+  .btn-group .btn:first-child{border-top-left-radius:12px;border-bottom-left-radius:12px}
+  .btn-group .btn:last-child{border-top-right-radius:12px;border-bottom-right-radius:12px}
+  .btn-group .btn + .btn{border-left:0}
+  /* Panels & Inputs */
+  .panel{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px}
+  .grid{display:grid;gap:18px}
+  @media (min-width:1100px){.grid{grid-template-columns:1fr 1fr}}
+  label{display:block;margin:6px 0 10px;font-weight:700}
+  textarea, input, select{
+    width:100%;padding:16px 14px;border:1px solid var(--border);border-radius:12px;
+    background:transparent;color:var(--text);font-size:18px
+  }
+  textarea.big{min-height:300px;line-height:1.6}
+  input.big, select.big{height:56px}
+  .row{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+  table{width:100%;border-collapse:collapse;font-size:16px}
+  th,td{border-top:1px solid var(--border);padding:12px 12px;text-align:left;vertical-align:top}
+  th{font-weight:700}
+  tr:first-child td,tr:first-child th{border-top:none}
+  code{font-family:ui-monospace,monospace}
+  .pill{font-size:13px;border:1px solid var(--border);padding:4px 10px;border-radius:999px;color:var(--muted)}
+  /* Drag & Drop */
+  tr.draggable{cursor:grab}
+  tr.draggable:active{cursor:grabbing}
+  tr.drop-target{outline:2px solid var(--drag);outline-offset:-2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Admin – DSL-/FRITZ!Box Logs</h1>
+
+  <div class="toolbar">
+    <!-- JSON: Upload & Download zusammen -->
+    <div class="btn-group">
+      <button id="btnLoad" class="btn btn-primary">JSON laden</button>
+      <button id="btnDownload" class="btn btn-primary">JSON herunterladen</button>
+    </div>
+    <input id="fileJson" type="file" accept="application/json" style="display:none">
+    <button id="btnCopy" class="btn btn-ghost">JSON kopieren</button>
+    <button id="btnClear" class="btn btn-danger">Arbeitsstand leeren</button>
+  </div>
+
+  <div class="grid">
+    <!-- Roh-Logs -->
+    <section class="panel">
+      <h2>Roh-Logs (Copy-Paste)</h2>
+      <label for="taLogs">FRITZ!Box-Logs (jede Zeile: TT.MM.JJ TAB HH:MM:SS TAB Nachricht)</label>
+      <textarea id="taLogs" class="big" spellcheck="false"></textarea>
+      <button id="btnParse" class="btn btn-primary" style="margin-top:12px">Logs parsen & hinzufügen</button>
+    </section>
+
+    <!-- Speedtests -->
+    <section class="panel">
+      <h2>Speedtests (Block-Format)</h2>
+      <label for="taSpeed">Block(e) wie: 28.08.25 - 19:44zmbngh · (optional Strichzeile) · 98 · 17,9</label>
+      <textarea id="taSpeed" class="big" spellcheck="false"></textarea>
+      <button id="btnParseSpeed" class="btn btn-primary" style="margin-top:12px">Speedtests parsen & hinzufügen</button>
+    </section>
+
+    <!-- Individuelle Events (ohne Timestamp, verschiebbar) -->
+    <section class="panel">
+      <h2>Individuelles Event</h2>
+      <div class="row">
+        <div>
+          <label for="evType">Typ</label>
+          <select id="evType" class="big">
+            <option value="info">info</option>
+            <option value="wiring_issue">wiring_issue</option>
+            <option value="ok">ok</option>
+            <option value="sync">sync</option>
+            <option value="error">error</option>
+            <option value="speedtest">speedtest</option>
+          </select>
+        </div>
+        <div>
+          <label for="evTitle">Titel / Beschreibung</label>
+          <input id="evTitle" class="big">
+        </div>
+      </div>
+      <label for="evDetails">Details (optional)</label>
+      <input id="evDetails" class="big">
+      <button id="btnAddEvent" class="btn btn-primary" style="margin-top:12px">Individuelles Event hinzufügen</button>
+    </section>
+
+    <!-- JSON per Paste -->
+    <section class="panel">
+      <h2>JSON einfügen</h2>
+      <label for="taJson">Komplette <code>events.json</code> hier einfügen</label>
+      <textarea id="taJson" class="big" spellcheck="false"></textarea>
+      <button id="btnMergeJson" class="btn btn-primary" style="margin-top:12px">JSON aus Textfeld laden & mergen</button>
+    </section>
+  </div>
+
+  <!-- Vorschau -->
+  <section class="panel" style="margin-top:18px">
+    <h2>Vorschau aktueller Daten</h2>
+    <table id="tbl"><thead>
+      <tr><th style="width:220px">Datum/Zeit</th><th style="width:160px">Typ</th><th>Titel & Details</th></tr>
+    </thead><tbody></tbody></table>
+    <p style="color:var(--muted);margin-top:8px">Gesamt: <span id="count">0</span> Einträge</p>
+  </section>
+</div>
+
+<script>
+  const $ = s => document.querySelector(s);
+
+  let data = { meta:{ title:"DSL-/FRITZ!Box Ereignisse", timezone:"Europe/Berlin" }, events:[], milestones:[] };
+
+  // -------- Helpers --------
+  function normalizeText(s){
+    return String(s).replace(/\u00A0/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+  function parseNumberDE(s){ return parseFloat(String(s).replace(/\./g,'').replace(',', '.')); }
+
+  // DMY "DD.MM.YY HH:MM:SS" + ISO fallback
+  function parseToDate(dt){
+    if(!dt) return null;
+    const m = dt.match(/^(\d{2})\.(\d{2})\.(\d{2}) (\d{2}):(\d{2}):(\d{2})$/);
+    if(m){
+      const dd=+m[1], mm=+m[2], yy=+m[3], HH=+m[4], MM=+m[5], SS=+m[6];
+      const yyyy = yy<50 ? 2000+yy : 1900+yy;
+      return new Date(yyyy, mm-1, dd, HH, MM, SS);
+    }
+    const t = Date.parse(dt);
+    return Number.isNaN(t) ? null : new Date(t);
+  }
+
+  // Datierte Events (neu→alt) sortieren; manuelle bleiben an ihrer Position und sind DnD-verschiebbar
+  function sortEventsKeepManualPositions(){
+    const manualSlots = new Set();
+    const manual = [];
+    const timed = [];
+    data.events.forEach((e,i)=>{ if(e.manual || !e.dt){ manualSlots.add(i); manual.push(e);} else timed.push(e); });
+    timed.sort((a,b)=> (parseToDate(b.dt) - parseToDate(a.dt)));
+    const rebuilt = []; let t=0, m=0;
+    for(let i=0;i<data.events.length;i++){ rebuilt.push( manualSlots.has(i) ? manual[m++] : timed[t++] ); }
+    data.events = rebuilt;
+  }
+
+  // -------- Parsers --------
+  const RX = {
+    line: /^(\d{2}\.\d{2}\.\d{2})\s+(\d{2}:\d{2}:\d{2})\s+(.*)$/i,
+    speedtestLog: /\bSpeedtest-ID:\s*([A-Za-z0-9]+)\b.*?Down:\s*([\d\.,]+)\s*Mbit\/s.*?Up:\s*([\d\.,]+)\s*Mbit\/s/i,
+    rates: /([\d\.\s]+)\/(\d{1,6})\s*kbit\/s/i,
+    wiring: /unzulässige\s+verkabelung\s+erkannt.*?abzweigung\s+ist\s+(\d+)\s*meter.*?kostet\s+ungefähr\s+(\d+)\s*kbit\/s/i
+  };
+
+  // Mapping nach deinen Regeln
+  function parseLogLine(rawLine){
+    const m = rawLine.match(RX.line);
+    if(!m) return null;
+    const [, dmy, hms, msgRaw] = m;
+    const dt = `${dmy} ${hms}`;
+    const raw = normalizeText(msgRaw);
+    const msg = raw.toLowerCase();
+
+    // Speedtest
+    if (RX.speedtestLog.test(raw)) {
+      const sm = raw.match(RX.speedtestLog);
+      return { dt, type:'speedtest', title:'Vodafone Speedtest', id: sm[1], down: parseNumberDE(sm[2]), up: parseNumberDE(sm[3]) };
+    }
+    // Verkabelung
+    const w = raw.match(RX.wiring);
+    if (w) return { dt, type:'wiring_issue', title:'Unzulässige Verkabelung erkannt', length_m:+w[1], loss_kbit:+w[2], message: raw };
+
+    // Training -> sync
+    if (msg.includes('synchronisierung beginnt') && msg.includes('(training')) {
+      return { dt, type:'sync', title:'DSL-Synchronisierung beginnt (Training)' };
+    }
+    // DSL ist verfügbar -> ok (+ optional Raten)
+    if (msg.startsWith('dsl ist verfügbar')) {
+      const r = raw.match(RX.rates);
+      return r
+        ? { dt, type:'ok', title:'DSL ist verfügbar', details:`${normalizeText(r[1]).replace(/\s+/g,'')}/${r[2]} kbit/s` }
+        : { dt, type:'ok', title:'DSL ist verfügbar' };
+    }
+    // Internetverbindung wurde erfolgreich hergestellt -> ok
+    if (msg.startsWith('internetverbindung wurde erfolgreich hergestellt')) {
+      return { dt, type:'ok', title:'Internetverbindung wurde erfolgreich hergestellt' };
+    }
+    // DSL antwortet nicht -> error
+    if (msg.startsWith('dsl antwortet nicht')) {
+      return { dt, type:'error', title:'DSL antwortet nicht', details: (msg.includes('keine dsl-synchronisierung') ? 'Keine DSL-Synchronisierung' : undefined) };
+    }
+    // Internetverbindung wurde getrennt -> error
+    if (msg.startsWith('internetverbindung wurde getrennt')) {
+      return { dt, type:'error', title:'Internetverbindung wurde getrennt' };
+    }
+
+    // Fallback
+    return { dt, type:'info', title: rawLine.trim() };
+  }
+
+  // Speedtest-Block:
+  // 1: "DD.MM.YY - HH:MM[:SS]ID"
+  // 2: "--" (optional)
+  // 3: Down, 4: Up
+  function parseSpeedBlocks(text){
+    const blocks = text.split(/\n\s*\n/).map(b=>b.trim()).filter(Boolean);
+    const out = [];
+    for(const block of blocks){
+      const lines = block.split(/\r?\n/).map(l => normalizeText(l)).filter(Boolean);
+      if(lines.length < 2) continue;
+      const m = lines[0].match(/^(\d{2}\.\d{2}\.\d{2})\s*-\s*(\d{2}:\d{2})(?::(\d{2}))?([A-Za-z0-9]+)$/);
+      if(!m) continue;
+      const [, dmy, hm, ssOpt, id] = m;
+      const hms = hm + ':' + (ssOpt ?? '00');
+      const dt = `${dmy} ${hms}`;
+
+      const vals = [];
+      for(let i=1;i<lines.length;i++){
+        if(lines[i].replace(/-/g,'').trim()==='') continue;
+        const n = parseNumberDE(lines[i]);
+        if(!Number.isNaN(n)) vals.push(n);
+        if(vals.length>=2) break;
+      }
+      if(vals.length<2) continue;
+      const [down, up] = vals;
+      out.push({ dt, type:'speedtest', title:'Vodafone Speedtest', id, down, up });
+    }
+    return out;
+  }
+
+  // -------- Drag & Drop (nur manuelle Events) --------
+  let dragIndex = null;
+  function attachDnDHandlers(){
+    const rows = document.querySelectorAll('#tbl tbody tr');
+    rows.forEach(row=>{
+      const idx = +row.dataset.index;
+      const ev = data.events[idx];
+      if(ev && ev.manual === true){
+        row.setAttribute('draggable','true');
+        row.classList.add('draggable');
+        row.addEventListener('dragstart', e=>{ dragIndex = idx; e.dataTransfer.effectAllowed = 'move'; });
+        row.addEventListener('dragend', ()=>{ dragIndex = null; rows.forEach(r=>r.classList.remove('drop-target')); });
+      }else{
+        row.removeAttribute('draggable'); row.classList.remove('draggable');
+      }
+      row.addEventListener('dragover', e=>{
+        if(dragIndex===null) return;
+        e.preventDefault(); row.classList.add('drop-target'); e.dataTransfer.dropEffect = 'move';
+      });
+      row.addEventListener('dragleave', ()=> row.classList.remove('drop-target'));
+      row.addEventListener('drop', e=>{
+        e.preventDefault(); row.classList.remove('drop-target');
+        if(dragIndex===null) return;
+        const targetIndex = +row.dataset.index;
+        if(targetIndex === dragIndex) return;
+        const moving = data.events[dragIndex];
+        if(!moving || moving.manual !== true) return;
+        data.events.splice(dragIndex,1);
+        data.events.splice(targetIndex,0,moving);
+        refreshTable();
+      });
+    });
+  }
+
+  // -------- Render --------
+  function refreshTable(){
+    sortEventsKeepManualPositions();
+
+    const tbody = document.querySelector('#tbl tbody');
+    const rows = data.events.map((e,i)=>{
+      const det = (e.type==='speedtest')
+        ? `ID: <code>${e.id}</code> · Down: <b>${e.down}</b> Mbit/s · Up: <b>${e.up}</b> Mbit/s`
+        : (e.details || (e.type==='wiring_issue'
+            ? `${e.message || ''} ${e.length_m?('· Abzweigung: '+e.length_m+' m'):''} ${e.loss_kbit?('· Verlust: '+e.loss_kbit+' kbit/s'):''}`.trim()
+            : ''));
+      const dtShown = e.dt && e.dt.length ? e.dt : '—';
+      const manualBadge = e.manual ? ' <span class="pill">manuell</span>' : '';
+      return `<tr data-index="${i}">
+        <td><code>${dtShown}</code></td>
+        <td><span class="pill">${e.type}</span>${manualBadge}</td>
+        <td>${e.title}${det?(' – <span style="color:var(--muted)">'+det+'</span>'):''}</td>
+      </tr>`;
+    }).join('') || `<tr><td colspan="3" style="color:var(--muted)">Noch keine Einträge.</td></tr>`;
+
+    tbody.innerHTML = rows;
+    document.getElementById('count').textContent = data.events.length;
+    attachDnDHandlers();
+  }
+
+  // -------- Actions --------
+  document.getElementById('btnParse').addEventListener('click', ()=>{
+    const lines = document.getElementById('taLogs').value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+    const parsed = lines.map(parseLogLine).filter(Boolean);
+    data.events.push(...parsed);
+    refreshTable();
+  });
+
+  document.getElementById('btnParseSpeed').addEventListener('click', ()=>{
+    const raw = document.getElementById('taSpeed').value.trim();
+    if(!raw){ alert('Bitte Speedtest-Blöcke einfügen.'); return; }
+    const parsed = parseSpeedBlocks(raw);
+    if(parsed.length===0){ alert('Keine gültigen Speedtest-Blöcke erkannt.'); return; }
+    data.events.push(...parsed);
+    refreshTable();
+  });
+
+  // Manuelles Event (ohne dt) – oben einfügen, verschiebbar
+  document.getElementById('btnAddEvent').addEventListener('click', ()=>{
+    const type = document.getElementById('evType').value;
+    const title = document.getElementById('evTitle').value.trim();
+    const details = document.getElementById('evDetails').value.trim();
+    if(!title){ alert('Bitte Titel/Beschreibung eingeben.'); return; }
+    const obj = { dt:"", type, title, manual:true };
+    if(details) obj.details = details;
+    data.events.unshift(obj);
+    refreshTable();
+  });
+
+  // JSON Datei laden
+  document.getElementById('btnLoad').addEventListener('click', ()=> document.getElementById('fileJson').click());
+  document.getElementById('fileJson').addEventListener('change', async (ev)=>{
+    const f = ev.target.files[0];
+    if(!f) return;
+    try{
+      const txt = await f.text();
+      mergeJsonText(txt);
+    }catch(e){ alert('Konnte JSON nicht laden: '+e.message); }
+  });
+
+  // JSON aus Textfeld mergen
+  document.getElementById('btnMergeJson').addEventListener('click', ()=>{
+    const txt = document.getElementById('taJson').value.trim();
+    if(!txt){ alert('Bitte JSON einfügen.'); return; }
+    try{ mergeJsonText(txt); }catch(e){ alert('Ungültiges JSON: '+e.message); }
+  });
+
+  function mergeJsonText(txt){
+    const j = JSON.parse(txt);
+    if(!j.events) j.events = [];
+    if(!j.meta) j.meta = {title:"DSL-/FRITZ!Box Ereignisse", timezone:"Europe/Berlin"};
+    if(!j.milestones) j.milestones = [];
+    data.events.push(...j.events);
+    data.milestones.push(...(j.milestones||[]));
+    refreshTable();
+  }
+
+  // Download / Copy / Clear
+  document.getElementById('btnDownload').addEventListener('click', ()=>{
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = Object.assign(document.createElement('a'), {href:url, download:'events.json'});
+    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  });
+  document.getElementById('btnCopy').addEventListener('click', ()=>{
+    navigator.clipboard.writeText(JSON.stringify(data,null,2));
+    alert('JSON in die Zwischenablage kopiert.');
+  });
+  document.getElementById('btnClear').addEventListener('click', ()=>{
+    if(confirm('Arbeitsstand wirklich leeren?')){
+      data.events = []; data.milestones = [];
+      document.querySelectorAll('input,textarea').forEach(el=> el.value = '');
+      refreshTable();
+    }
+  });
+
+  refreshTable();
+</script>
+</body>
+</html>

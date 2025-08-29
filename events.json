@@ -1,0 +1,140 @@
+{
+  "meta": {
+    "title": "DSL-/FRITZ!Box Ereignisse",
+    "timezone": "Europe/Berlin"
+  },
+  "events": [
+    {
+      "dt": "28.08.25 16:58:46",
+      "type": "ok",
+      "title": "Internetverbindung wurde erfolgreich hergestellt"
+    },
+    {
+      "dt": "28.08.25 16:57:42",
+      "type": "sync",
+      "title": "DSL ist verfügbar",
+      "details": "107069/19515 kbit/s"
+    },
+    {
+      "dt": "28.08.25 16:56:07",
+      "type": "training",
+      "title": "DSL-Synchronisierung beginnt (Training)"
+    },
+    {
+      "dt": "28.08.25 16:55:05",
+      "type": "disconnect",
+      "title": "Internetverbindung wurde getrennt"
+    },
+    {
+      "dt": "28.08.25 16:55:03",
+      "type": "error",
+      "title": "DSL antwortet nicht",
+      "details": "Keine DSL-Synchronisierung"
+    },
+    {
+      "dt": "28.08.25 16:23:00",
+      "type": "speedtest",
+      "title": "Vodafone Speedtest",
+      "id": "phpfkz",
+      "down": 168,
+      "up": 34
+    },
+    {
+      "dt": "28.08.25 16:20:00",
+      "type": "speedtest",
+      "title": "Vodafone Speedtest",
+      "id": "pzgfz2",
+      "down": 177,
+      "up": 35
+    },
+    {
+      "dt": "28.08.25 16:19:24",
+      "type": "ok",
+      "title": "Internetverbindung wurde erfolgreich hergestellt"
+    },
+    {
+      "dt": "28.08.25 16:18:20",
+      "type": "sync",
+      "title": "DSL ist verfügbar",
+      "details": "185812/36999 kbit/s"
+    },
+    {
+      "dt": "28.08.25 16:16:46",
+      "type": "training",
+      "title": "DSL-Synchronisierung beginnt (Training)"
+    },
+    {
+      "dt": "",
+      "type": "info",
+      "title": "DSL KABEL GETRENNT UND ERNEUT EINGESTECKT",
+      "manual": true
+    },
+    {
+      "dt": "28.08.25 16:13:00",
+      "type": "speedtest",
+      "title": "Vodafone Speedtest",
+      "id": "vnsc2w",
+      "down": 86,
+      "up": 18.1
+    },
+    {
+      "dt": "28.08.25 16:10:00",
+      "type": "speedtest",
+      "title": "Vodafone Speedtest",
+      "id": "cfh9fc",
+      "down": 88,
+      "up": 18
+    },
+    {
+      "dt": "28.08.25 16:08:07",
+      "type": "ok",
+      "title": "Internetverbindung wurde erfolgreich hergestellt"
+    },
+    {
+      "dt": "28.08.25 16:07:00",
+      "type": "sync",
+      "title": "DSL ist verfügbar",
+      "details": "94474/19608 kbit/s"
+    },
+    {
+      "dt": "28.08.25 16:05:26",
+      "type": "training",
+      "title": "DSL-Synchronisierung beginnt (Training)"
+    },
+    {
+      "dt": "28.08.25 16:04:26",
+      "type": "disconnect",
+      "title": "Internetverbindung wurde getrennt"
+    },
+    {
+      "dt": "28.08.25 16:04:25",
+      "type": "error",
+      "title": "DSL antwortet nicht",
+      "details": "Keine DSL-Synchronisierung"
+    },
+    {
+      "dt": "28.08.25 16:01:10",
+      "type": "ok",
+      "title": "Internetverbindung wurde erfolgreich hergestellt"
+    },
+    {
+      "dt": "28.08.25 16:00:03",
+      "type": "sync",
+      "title": "DSL ist verfügbar",
+      "details": "185812/36999 kbit/s"
+    },
+    {
+      "dt": "28.08.25 15:58:29",
+      "type": "training",
+      "title": "DSL-Synchronisierung beginnt (Training)"
+    },
+    {
+      "dt": "",
+      "type": "info",
+      "title": "DSL KABEL VERBUNDEN",
+      "manual": true,
+      "details": "Neues DSL Kabel eingesteckt"
+    }
+  ],
+  "milestones": []
+}
