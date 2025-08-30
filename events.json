@@ -5,6 +5,90 @@
   },
   "events": [
     {
+      "dt": "30.08.25 09:53:00",
+      "type": "speedtest",
+      "title": "Vodafone Speedtest",
+      "id": "swftcdgvc8h2",
+      "down": 119,
+      "up": 21
+    },
+    {
+      "dt": "30.08.25 09:50:50",
+      "type": "ok",
+      "title": "Internetverbindung wurde erfolgreich hergestellt"
+    },
+    {
+      "dt": "30.08.25 09:49:46",
+      "type": "ok",
+      "title": "DSL ist verfügbar",
+      "details": "124989/23357 kbit/s"
+    },
+    {
+      "dt": "30.08.25 09:48:12",
+      "type": "sync",
+      "title": "DSL-Synchronisierung beginnt (Training)"
+    },
+    {
+      "dt": "30.08.25 09:48:00",
+      "type": "error",
+      "title": "Internetverbindung wurde getrennt"
+    },
+    {
+      "dt": "30.08.25 09:47:58",
+      "type": "error",
+      "title": "DSL antwortet nicht",
+      "details": "Keine DSL-Synchronisierung"
+    },
+    {
+      "dt": "30.08.25 09:46:00",
+      "type": "info",
+      "title": "DSL KABEL (TAE DOSE) NEU VERBUNDEN",
+      "details": "Um zu testen ob bei Neuverbindung die empfangene Bandbreite anders ist"
+    },
+    {
+      "dt": "30.08.25 09:45:00",
+      "type": "speedtest",
+      "title": "Vodafone Speedtest",
+      "id": "g3fg6h",
+      "down": 83,
+      "up": 17.8
+    },
+    {
+      "dt": "30.08.25 03:10:13",
+      "type": "wiring_issue",
+      "title": "Unzulässige Verkabelung erkannt",
+      "length_m": 14,
+      "loss_kbit": 39655,
+      "message": "An der DSL-Leitung wurde eine Beeinträchtigung des Signals durch eine unzulässige Verkabelung erkannt. Bitte prüfen Sie Ihre Leitung auf eventuell vorhandene Abzweigungen oder Mehrfachverteilungen. Die Abzweigung ist 14 Meter lang. Sie kostet ungefähr 39655 kbit/s."
+    },
+    {
+      "dt": "30.08.25 03:10:12",
+      "type": "ok",
+      "title": "Internetverbindung wurde erfolgreich hergestellt"
+    },
+    {
+      "dt": "30.08.25 03:09:08",
+      "type": "ok",
+      "title": "DSL ist verfügbar",
+      "details": "90968/19481 kbit/s"
+    },
+    {
+      "dt": "30.08.25 03:07:33",
+      "type": "sync",
+      "title": "DSL-Synchronisierung beginnt (Training)"
+    },
+    {
+      "dt": "30.08.25 03:07:16",
+      "type": "error",
+      "title": "Internetverbindung wurde getrennt"
+    },
+    {
+      "dt": "30.08.25 03:07:16",
+      "type": "error",
+      "title": "DSL antwortet nicht",
+      "details": "Keine DSL-Synchronisierung"
+    },
+    {
       "dt": "29.08.25 17:54:00",
       "type": "speedtest",
       "title": "Vodafone Speedtest",
